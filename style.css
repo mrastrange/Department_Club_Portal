@@ -905,6 +905,8 @@ nav {
     padding: 1.5rem;
     box-shadow: var(--shadow-md);
     border: 1px solid var(--border-color);
+    position: relative;
+    height: 350px;
 }
 
 .chart-card h3 {
@@ -912,6 +914,12 @@ nav {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+.chart-card canvas {
+    max-height: 280px !important;
+    width: 100% !important;
+    height: auto !important;
 }
 
 /* ========================================
