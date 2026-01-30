@@ -5,12 +5,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Club Head Dashboard</h2>
+<h1>Club Head Dashboard</h1>
 
-    <div class="box">Create Event</div>
-    <div class="box">My Events</div>
-    <div class="box">View Participants</div>
+<div class="card">
+    <h3>Create Event</h3>
+    <input id="eventName" placeholder="Event Name">
+    <input id="eventDate" type="date">
+    <input id="eventVenue" placeholder="Venue">
+    <button onclick="createEvent()">Create</button>
+</div>
 
-    <a href="index.html">Logout</a>
+<section>
+    <h3>My Events</h3>
+    <ul id="clubEvents"></ul>
+</section>
+
+<a class="logout" href="index.html">Logout</a>
+
+<script src="script.js"></script>
+<script>
+loadClubEvents();
+</script>
 </body>
 </html>
