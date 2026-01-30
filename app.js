@@ -784,6 +784,14 @@ function viewUserProfile(username) {
 }
 
 function renderCharts() {
+    // Destroy existing charts if they exist
+    if (window.eventsChartInstance) {
+        window.eventsChartInstance.destroy();
+    }
+    if (window.registrationChartInstance) {
+        window.registrationChartInstance.destroy();
+    }
+    
     // Events Chart
     const eventsCtx = document.getElementById('eventsChart');
     if (eventsCtx && typeof Chart !== 'undefined') {
@@ -792,7 +800,7 @@ function renderCharts() {
             categoryData[e.category] = (categoryData[e.category] || 0) + 1;
         });
         
-        new Chart(eventsCtx, {
+        window.eventsChartInstance = new Chart(eventsCtx, {
             type: 'bar',
             data: {
                 labels: Object.keys(categoryData),
@@ -806,14 +814,44 @@ function renderCharts() {
                         'rgba(239, 68, 68, 0.8)',
                         'rgba(59, 130, 246, 0.8)',
                         'rgba(168, 85, 247, 0.8)'
-                    ]
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
+                aspectRatio: 2,
                 plugins: {
-                    legend: { display: false }
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        borderRadius: 8,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { 
+                            stepSize: 1,
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        }
+                    },
+                    x: {
+                        ticks: { 
+                            font: { size: 11 }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
                 }
             }
         });
@@ -826,10 +864,10 @@ function renderCharts() {
             .sort((a, b) => b.participants.length - a.participants.length)
             .slice(0, 5);
         
-        new Chart(regCtx, {
-            type: 'pie',
+        window.registrationChartInstance = new Chart(regCtx, {
+            type: 'doughnut',
             data: {
-                labels: topEvents.map(e => e.name),
+                labels: topEvents.map(e => e.name.length > 20 ? e.name.substring(0, 20) + '...' : e.name),
                 datasets: [{
                     data: topEvents.map(e => e.participants.length),
                     backgroundColor: [
@@ -838,12 +876,34 @@ function renderCharts() {
                         'rgba(16, 185, 129, 0.8)',
                         'rgba(239, 68, 68, 0.8)',
                         'rgba(59, 130, 246, 0.8)'
-                    ]
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: true,
+                aspectRatio: 2,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: { size: 11 },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        borderRadius: 8,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 }
+                    }
+                },
+                cutout: '60%'
             }
         });
     }
