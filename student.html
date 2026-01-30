@@ -5,20 +5,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Available Events</h2>
+<h1>Available Events</h1>
 
-    <div class="event">
-        <h3>AI Workshop</h3>
-        <p>Date. 12 Feb</p>
-        <button onclick="alert('Registered Successfully')">Register</button>
-    </div>
+<ul id="studentEvents"></ul>
 
-    <div class="event">
-        <h3>Web Development Bootcamp</h3>
-        <p>Date. 15 Feb</p>
-        <button onclick="alert('Registered Successfully')">Register</button>
-    </div>
+<a class="logout" href="index.html">Logout</a>
 
-    <a href="index.html">Logout</a>
+<script src="script.js"></script>
+<script>
+loadStudentEvents();
+</script>
 </body>
 </html>
