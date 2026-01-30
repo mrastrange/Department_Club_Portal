@@ -5,13 +5,18 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Admin Dashboard</h2>
+<h1>Admin Dashboard</h1>
 
-    <div class="box">Create Club</div>
-    <div class="box">Approve Events</div>
-    <div class="box">View Registrations</div>
-    <div class="box">Post Announcements</div>
+<section>
+    <h3>All Events</h3>
+    <ul id="adminEvents"></ul>
+</section>
 
-    <a href="index.html">Logout</a>
+<a class="logout" href="index.html">Logout</a>
+
+<script src="script.js"></script>
+<script>
+loadAdminEvents();
+</script>
 </body>
 </html>
