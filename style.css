@@ -1,40 +1,59 @@
 body {
     font-family: Arial;
-    background: #f2f2f2;
+    background: #eef2f7;
+    margin: 0;
+    padding: 20px;
     text-align: center;
 }
 
-.container {
+h1, h2 {
+    color: #333;
+}
+
+.login-card, .card {
     background: white;
+    width: 320px;
+    margin: 40px auto;
     padding: 20px;
-    width: 300px;
-    margin: 100px auto;
-    border-radius: 8px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 input, select, button {
     width: 90%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 8px 0;
 }
 
 button {
-    background: #007bff;
+    background: #2563eb;
     color: white;
     border: none;
-}
-
-.box {
-    background: white;
-    margin: 15px auto;
-    padding: 20px;
-    width: 300px;
     border-radius: 6px;
+    cursor: pointer;
 }
 
-.event {
+button:hover {
+    background: #1e40af;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
     background: white;
-    margin: 15px auto;
+    margin: 10px auto;
     padding: 15px;
-    width: 300px;
+    width: 350px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.logout {
+    display: inline-block;
+    margin-top: 30px;
+    color: red;
+    text-decoration: none;
 }
