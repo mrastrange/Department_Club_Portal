@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Department Event Portal - Login</title>
+    <title>Dept Event Portal - Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Department Technical Events Portal</h2>
+<div class="login-card">
+    <h2>Department Event Portal</h2>
 
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
+    <input id="username" placeholder="Username">
+    <select id="role">
+        <option value="admin">Admin</option>
+        <option value="club">Club Head</option>
+        <option value="student">Student</option>
+    </select>
 
-        <select id="role">
-            <option value="admin">Admin</option>
-            <option value="club">Club Head</option>
-            <option value="student">Student</option>
-        </select>
+    <button onclick="login()">Login</button>
+</div>
 
-        <button onclick="login()">Login</button>
-    </div>
-
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
