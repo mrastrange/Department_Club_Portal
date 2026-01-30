@@ -6,6 +6,8 @@ let users = JSON.parse(localStorage.getItem('users')) || [];
 let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
 let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
 let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+let attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+let feedback = JSON.parse(localStorage.getItem('feedback')) || {};
 let currentCategory = 'all';
 let currentView = 'grid';
 let theme = localStorage.getItem('theme') || 'light';
@@ -325,6 +327,14 @@ function saveNotifications() {
 
 function saveFavorites() {
     localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+function saveAttendance() {
+    localStorage.setItem('attendance', JSON.stringify(attendance));
+}
+
+function saveFeedback() {
+    localStorage.setItem('feedback', JSON.stringify(feedback));
 }
 
 // ========================================
@@ -921,7 +931,13 @@ function exportData() {
     const data = {
         events,
         users: users.map(u => ({ ...u, password: undefined })),
-        exportDate: new Date().toISOString()
+        exportDate: new Date().toISOString(),
+        statistics: {
+            totalEvents: events.length,
+            totalRegistrations: events.reduce((sum, e) => sum + e.participants.length, 0),
+            totalUsers: users.length,
+            activeClubs: users.filter(u => u.role === 'club').length
+        }
     };
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -933,6 +949,79 @@ function exportData() {
     URL.revokeObjectURL(url);
     
     showToast('Data exported successfully!', 'success');
+}
+
+// Export events to CSV
+function exportEventsToCSV() {
+    let csv = 'Event Name,Category,Date,Time,Venue,Capacity,Registered,Created By,Status\n';
+    
+    events.forEach(event => {
+        const status = getEventStatus(event).text;
+        csv += `"${event.name}","${event.category}","${event.date}","${event.time}","${event.venue}",${event.capacity},${event.participants.length},"${event.createdBy}","${status}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `events-export-${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('Events exported to CSV!', 'success');
+}
+
+// Generate event QR code
+function generateQRCode(eventId) {
+    const event = events.find(e => e.id === eventId);
+    if (!event) return;
+    
+    const qrData = {
+        eventId: event.id,
+        name: event.name,
+        date: event.date,
+        time: event.time,
+        venue: event.venue
+    };
+    
+    showToast('QR Code feature - coming soon! Will contain: ' + event.name, 'info');
+}
+
+// Bulk registration actions
+function bulkRegisterStudents(eventId, usernames) {
+    const eventIndex = events.findIndex(e => e.id === eventId);
+    if (eventIndex === -1) return;
+    
+    let registered = 0;
+    usernames.forEach(username => {
+        if (!events[eventIndex].participants.includes(username) && 
+            events[eventIndex].participants.length < events[eventIndex].capacity) {
+            events[eventIndex].participants.push(username);
+            registered++;
+        }
+    });
+    
+    saveEvents();
+    showToast(`${registered} students registered successfully!`, 'success');
+    if (currentUser.role === 'admin') renderAdminDashboard();
+}
+
+// Event analytics
+function getEventAnalytics(eventId) {
+    const event = events.find(e => e.id === eventId);
+    if (!event) return null;
+    
+    const fillRate = (event.participants.length / event.capacity * 100).toFixed(1);
+    const daysUntilEvent = Math.ceil((new Date(event.date) - new Date()) / (1000 * 60 * 60 * 24));
+    
+    return {
+        fillRate,
+        daysUntilEvent,
+        isUpcoming: daysUntilEvent > 0,
+        isFull: event.participants.length >= event.capacity,
+        participants: event.participants.length,
+        capacity: event.capacity
+    };
 }
 
 // ========================================
@@ -1310,6 +1399,73 @@ function switchStudentView(view) {
     } else {
         grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
     }
+}
+
+// ========================================
+// ATTENDANCE & FEEDBACK
+// ========================================
+function markAttendance(eventId, username) {
+    if (!attendance[eventId]) {
+        attendance[eventId] = [];
+    }
+    
+    if (!attendance[eventId].includes(username)) {
+        attendance[eventId].push(username);
+        saveAttendance();
+        showToast('Attendance marked successfully!', 'success');
+        return true;
+    } else {
+        showToast('Attendance already marked', 'info');
+        return false;
+    }
+}
+
+function submitFeedback(eventId, rating, comment) {
+    if (!feedback[eventId]) {
+        feedback[eventId] = [];
+    }
+    
+    const feedbackEntry = {
+        username: currentUser.username,
+        rating: parseInt(rating),
+        comment: comment.trim(),
+        timestamp: new Date().toISOString()
+    };
+    
+    // Remove previous feedback from same user
+    feedback[eventId] = feedback[eventId].filter(f => f.username !== currentUser.username);
+    feedback[eventId].push(feedbackEntry);
+    
+    // Update event rating
+    const eventIndex = events.findIndex(e => e.id === eventId);
+    if (eventIndex !== -1) {
+        const eventFeedback = feedback[eventId];
+        const avgRating = eventFeedback.reduce((sum, f) => sum + f.rating, 0) / eventFeedback.length;
+        events[eventIndex].rating = avgRating.toFixed(1);
+        events[eventIndex].feedbackCount = eventFeedback.length;
+        saveEvents();
+    }
+    
+    saveFeedback();
+    showToast('Feedback submitted successfully!', 'success');
+}
+
+function getFeedbackForEvent(eventId) {
+    return feedback[eventId] || [];
+}
+
+function getAttendanceForEvent(eventId) {
+    return attendance[eventId] || [];
+}
+
+function getAttendanceRate(eventId) {
+    const event = events.find(e => e.id === eventId);
+    if (!event) return 0;
+    
+    const attended = attendance[eventId] ? attendance[eventId].length : 0;
+    const registered = event.participants.length;
+    
+    return registered > 0 ? (attended / registered * 100).toFixed(1) : 0;
 }
 
 // ========================================
