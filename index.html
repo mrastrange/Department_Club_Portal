@@ -1,23 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dept Event Portal - Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Event Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="login-card">
-    <h2>Department Event Portal</h2>
 
-    <input id="username" placeholder="Username">
-    <select id="role">
-        <option value="admin">Admin</option>
-        <option value="club">Club Head</option>
-        <option value="student">Student</option>
-    </select>
+    <nav id="navbar" class="hidden">
+        <div class="nav-brand">
+            <i class="fa-solid fa-graduation-cap"></i> EventPortal
+        </div>
+        <div class="nav-user">
+            <span id="userDisplay">Welcome, User</span>
+            <button onclick="logout()" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        </div>
+    </nav>
 
-    <button onclick="login()">Login</button>
-</div>
+    <div class="container">
 
-<script src="script.js"></script>
+        <section id="login-view" class="active-view">
+            <div class="login-box">
+                <div class="login-header">
+                    <h2>Welcome Back</h2>
+                    <p>Manage and attend campus events</p>
+                </div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="username" placeholder="Username" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <select id="role">
+                            <option value="student">Student</option>
+                            <option value="club">Club Head</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Login to Dashboard</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="admin-view" class="view hidden">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-chart-pie"></i> System Overview</h2>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Events</h3>
+                    <p id="totalEventsCount">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Registrations</h3>
+                    <p id="totalParticipantsCount">0</p>
+                </div>
+            </div>
+            
+            <h3>All Scheduled Events</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Venue</th>
+                            <th>Participants</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminEventList">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="club-view" class="view hidden">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-calendar-plus"></i> Club Management</h2>
+                <button onclick="toggleModal(true)" class="btn-primary"><i class="fa-solid fa-plus"></i> New Event</button>
+            </div>
+
+            <div id="clubEventsGrid" class="cards-grid">
+                </div>
+        </section>
+
+        <section id="student-view" class="view hidden">
+            <div class="section-header">
+                <h2><i class="fa-solid fa-ticket"></i> Upcoming Events</h2>
+            </div>
+            <div id="studentEventsGrid" class="cards-grid">
+                </div>
+        </section>
+
+    </div>
+
+    <div id="eventModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Event</h3>
+                <span onclick="toggleModal(false)" class="close">&times;</span>
+            </div>
+            <form onsubmit="handleCreateEvent(event)">
+                <input type="text" id="newEventName" placeholder="Event Name" required>
+                <input type="date" id="newEventDate" required>
+                <input type="text" id="newEventVenue" placeholder="Venue (e.g. Auditorium)" required>
+                <input type="text" id="newEventDesc" placeholder="Short Description" required>
+                <button type="submit" class="btn-primary">Publish Event</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
