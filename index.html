@@ -3,118 +3,710 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Event Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Campus Event Portal - Advanced</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- Navigation Bar -->
     <nav id="navbar" class="hidden">
-        <div class="nav-brand">
-            <i class="fa-solid fa-graduation-cap"></i> EventPortal
-        </div>
-        <div class="nav-user">
-            <span id="userDisplay">Welcome, User</span>
-            <button onclick="logout()" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>EventPortal</span>
+                <span class="beta-badge">PRO</span>
+            </div>
+            <div class="nav-center">
+                <div class="search-bar">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="globalSearch" placeholder="Search events, users, venues...">
+                </div>
+            </div>
+            <div class="nav-right">
+                <button class="nav-icon-btn" onclick="toggleNotifications()">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="notification-badge" id="notifBadge">0</span>
+                </button>
+                <button class="nav-icon-btn" onclick="toggleTheme()">
+                    <i class="fa-solid fa-moon" id="themeIcon"></i>
+                </button>
+                <div class="user-dropdown">
+                    <button class="user-btn" onclick="toggleUserMenu()">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span id="userDisplay">User</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu hidden" id="userMenu">
+                        <a href="#" onclick="openProfile()"><i class="fa-solid fa-user"></i> My Profile</a>
+                        <a href="#" onclick="openSettings()"><i class="fa-solid fa-gear"></i> Settings</a>
+                        <a href="#" onclick="viewMyRegistrations()"><i class="fa-solid fa-ticket"></i> My Registrations</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="logout()" class="text-danger"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="notification-panel hidden">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button onclick="clearAllNotifications()" class="btn-text">Clear All</button>
+        </div>
+        <div id="notificationList" class="notification-list">
+            <!-- Notifications will be rendered here -->
+        </div>
+    </div>
 
-        <section id="login-view" class="active-view">
-            <div class="login-box">
-                <div class="login-header">
-                    <h2>Welcome Back</h2>
-                    <p>Manage and attend campus events</p>
-                </div>
-                <form onsubmit="handleLogin(event)">
-                    <div class="input-group">
-                        <i class="fa-solid fa-user"></i>
-                        <input type="text" id="username" placeholder="Username" required>
+    <div class="main-wrapper">
+
+        <!-- LOGIN/REGISTER VIEW -->
+        <section id="auth-view" class="active-view">
+            <div class="auth-container">
+                <div class="auth-left">
+                    <div class="auth-hero">
+                        <i class="fa-solid fa-calendar-days hero-icon"></i>
+                        <h1>Campus Event Portal</h1>
+                        <p>Connect, Engage, and Experience Campus Life</p>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <i class="fa-solid fa-check-circle"></i>
+                                <span>Discover exciting campus events</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fa-solid fa-check-circle"></i>
+                                <span>Manage registrations effortlessly</span>
+                            </div>
+                            <div class="feature-item">
+                                <i class="fa-solid fa-check-circle"></i>
+                                <span>Real-time updates and notifications</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <i class="fa-solid fa-layer-group"></i>
-                        <select id="role">
-                            <option value="student">Student</option>
-                            <option value="club">Club Head</option>
-                            <option value="admin">Administrator</option>
+                </div>
+                <div class="auth-right">
+                    <!-- Login Form -->
+                    <div id="loginForm" class="auth-box">
+                        <div class="auth-header">
+                            <h2>Welcome Back</h2>
+                            <p>Sign in to your account</p>
+                        </div>
+                        <form onsubmit="handleLogin(event)">
+                            <div class="input-group">
+                                <label>Username</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user"></i>
+                                    <input type="text" id="loginUsername" placeholder="Enter your username" required>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                                    <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('loginPassword')"></i>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Login As</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user-tag"></i>
+                                    <select id="loginRole">
+                                        <option value="student">Student</option>
+                                        <option value="club">Club Head</option>
+                                        <option value="admin">Administrator</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="rememberMe">
+                                    <span>Remember me</span>
+                                </label>
+                                <a href="#" class="link-text">Forgot password?</a>
+                            </div>
+                            <button type="submit" class="btn-primary btn-block">
+                                <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                            </button>
+                        </form>
+                        <div class="auth-footer">
+                            <p>Don't have an account? <a href="#" onclick="showRegisterForm()">Register here</a></p>
+                        </div>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div id="registerForm" class="auth-box hidden">
+                        <div class="auth-header">
+                            <h2>Create Account</h2>
+                            <p>Join the campus community</p>
+                        </div>
+                        <form onsubmit="handleRegister(event)">
+                            <div class="input-group">
+                                <label>Full Name</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-signature"></i>
+                                    <input type="text" id="regFullName" placeholder="Enter your full name" required>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Username</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user"></i>
+                                    <input type="text" id="regUsername" placeholder="Choose a username" required>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Email</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <input type="email" id="regEmail" placeholder="your.email@university.edu" required>
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Password</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-lock"></i>
+                                    <input type="password" id="regPassword" placeholder="Create a strong password" required>
+                                    <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('regPassword')"></i>
+                                </div>
+                                <div class="password-strength" id="passwordStrength"></div>
+                            </div>
+                            <div class="input-group">
+                                <label>Register As</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-user-tag"></i>
+                                    <select id="regRole">
+                                        <option value="student">Student</option>
+                                        <option value="club">Club Head</option>
+                                        <option value="admin">Administrator</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group" id="clubNameGroup" style="display: none;">
+                                <label>Club Name</label>
+                                <div class="input-wrapper">
+                                    <i class="fa-solid fa-users"></i>
+                                    <input type="text" id="regClubName" placeholder="Enter your club name">
+                                </div>
+                            </div>
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="agreeTerms" required>
+                                    <span>I agree to the <a href="#" class="link-text">Terms & Conditions</a></span>
+                                </label>
+                            </div>
+                            <button type="submit" class="btn-primary btn-block">
+                                <i class="fa-solid fa-user-plus"></i> Create Account
+                            </button>
+                        </form>
+                        <div class="auth-footer">
+                            <p>Already have an account? <a href="#" onclick="showLoginForm()">Sign in</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADMIN DASHBOARD -->
+        <section id="admin-view" class="view hidden">
+            <div class="dashboard-container">
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fa-solid fa-chart-line"></i> Admin Dashboard</h1>
+                        <p class="subtitle">Comprehensive system overview and management</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-secondary" onclick="exportData()">
+                            <i class="fa-solid fa-download"></i> Export Data
+                        </button>
+                        <button class="btn-primary" onclick="openAdminSettings()">
+                            <i class="fa-solid fa-sliders"></i> Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analytics Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card gradient-1">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalEventsCount">0</h3>
+                            <p>Total Events</p>
+                            <span class="stat-change positive">+12% this month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-2">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalParticipantsCount">0</h3>
+                            <p>Total Registrations</p>
+                            <span class="stat-change positive">+8% this week</span>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-3">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalUsersCount">0</h3>
+                            <p>Active Users</p>
+                            <span class="stat-change positive">+5% today</span>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-4">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalClubsCount">0</h3>
+                            <p>Active Clubs</p>
+                            <span class="stat-change neutral">No change</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-bar"></i> Events Overview</h3>
+                        <canvas id="eventsChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Registration Distribution</h3>
+                        <canvas id="registrationChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Filters and Actions -->
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-list"></i> All Events</h2>
+                    <div class="filter-group">
+                        <select id="adminFilterStatus" onchange="renderAdminDashboard()">
+                            <option value="all">All Events</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="past">Past</option>
+                            <option value="today">Today</option>
+                        </select>
+                        <select id="adminFilterClub" onchange="renderAdminDashboard()">
+                            <option value="all">All Clubs</option>
+                        </select>
+                        <button class="btn-icon" onclick="refreshAdminData()">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Events Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Event Details</th>
+                                <th>Date & Time</th>
+                                <th>Venue</th>
+                                <th>Club</th>
+                                <th>Capacity</th>
+                                <th>Registered</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminEventList">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- User Management Section -->
+                <div class="section-header" style="margin-top: 40px;">
+                    <h2><i class="fa-solid fa-users-gear"></i> User Management</h2>
+                    <button class="btn-primary" onclick="openUserManagement()">
+                        <i class="fa-solid fa-user-plus"></i> Add User
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                                <th>Events</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUserList">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- CLUB DASHBOARD -->
+        <section id="club-view" class="view hidden">
+            <div class="dashboard-container">
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fa-solid fa-building-user"></i> Club Management</h1>
+                        <p class="subtitle">Manage your events and track engagement</p>
+                    </div>
+                    <button onclick="toggleModal(true)" class="btn-primary btn-lg">
+                        <i class="fa-solid fa-plus"></i> Create New Event
+                    </button>
+                </div>
+
+                <!-- Club Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card gradient-1">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-calendar"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="clubTotalEvents">0</h3>
+                            <p>My Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-2">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="clubTotalRegistrations">0</h3>
+                            <p>Total Registrations</p>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-3">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="clubUpcomingEvents">0</h3>
+                            <p>Upcoming Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-4">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="clubAvgRating">4.5</h3>
+                            <p>Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Filters -->
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-calendar-days"></i> My Events</h2>
+                    <div class="filter-group">
+                        <div class="view-toggle">
+                            <button class="toggle-btn active" onclick="switchEventView('grid')">
+                                <i class="fa-solid fa-grid"></i>
+                            </button>
+                            <button class="toggle-btn" onclick="switchEventView('list')">
+                                <i class="fa-solid fa-list"></i>
+                            </button>
+                        </div>
+                        <select id="clubEventFilter" onchange="renderClubDashboard()">
+                            <option value="all">All Events</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="past">Past</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn-primary">Login to Dashboard</button>
-                </form>
+                </div>
+
+                <!-- Events Grid -->
+                <div id="clubEventsGrid" class="cards-grid">
+                </div>
             </div>
         </section>
 
-        <section id="admin-view" class="view hidden">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-chart-pie"></i> System Overview</h2>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Events</h3>
-                    <p id="totalEventsCount">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Registrations</h3>
-                    <p id="totalParticipantsCount">0</p>
-                </div>
-            </div>
-            
-            <h3>All Scheduled Events</h3>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Event Name</th>
-                            <th>Date</th>
-                            <th>Venue</th>
-                            <th>Participants</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminEventList">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="club-view" class="view hidden">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-calendar-plus"></i> Club Management</h2>
-                <button onclick="toggleModal(true)" class="btn-primary"><i class="fa-solid fa-plus"></i> New Event</button>
-            </div>
-
-            <div id="clubEventsGrid" class="cards-grid">
-                </div>
-        </section>
-
+        <!-- STUDENT DASHBOARD -->
         <section id="student-view" class="view hidden">
-            <div class="section-header">
-                <h2><i class="fa-solid fa-ticket"></i> Upcoming Events</h2>
-            </div>
-            <div id="studentEventsGrid" class="cards-grid">
+            <div class="dashboard-container">
+                <div class="page-header">
+                    <div>
+                        <h1><i class="fa-solid fa-calendar-star"></i> Discover Events</h1>
+                        <p class="subtitle">Explore and register for exciting campus events</p>
+                    </div>
+                    <button class="btn-secondary" onclick="viewMyRegistrations()">
+                        <i class="fa-solid fa-ticket"></i> My Registrations
+                    </button>
                 </div>
+
+                <!-- Student Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card gradient-1">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="studentRegisteredCount">0</h3>
+                            <p>Events Registered</p>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-2">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="studentUpcomingCount">0</h3>
+                            <p>Upcoming Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-3">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-certificate"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="studentAttendedCount">0</h3>
+                            <p>Attended Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card gradient-4">
+                        <div class="stat-icon">
+                            <i class="fa-solid fa-heart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="studentFavoritesCount">0</h3>
+                            <p>Favorites</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Categories -->
+                <div class="categories-section">
+                    <h3>Browse by Category</h3>
+                    <div class="categories-grid">
+                        <button class="category-btn active" onclick="filterByCategory('all')">
+                            <i class="fa-solid fa-infinity"></i> All Events
+                        </button>
+                        <button class="category-btn" onclick="filterByCategory('technical')">
+                            <i class="fa-solid fa-code"></i> Technical
+                        </button>
+                        <button class="category-btn" onclick="filterByCategory('cultural')">
+                            <i class="fa-solid fa-masks-theater"></i> Cultural
+                        </button>
+                        <button class="category-btn" onclick="filterByCategory('sports')">
+                            <i class="fa-solid fa-futbol"></i> Sports
+                        </button>
+                        <button class="category-btn" onclick="filterByCategory('workshop')">
+                            <i class="fa-solid fa-chalkboard-user"></i> Workshop
+                        </button>
+                        <button class="category-btn" onclick="filterByCategory('social')">
+                            <i class="fa-solid fa-people-group"></i> Social
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-calendar-alt"></i> All Events</h2>
+                    <div class="filter-group">
+                        <select id="studentSortBy" onchange="renderStudentDashboard()">
+                            <option value="date">Sort by Date</option>
+                            <option value="popular">Most Popular</option>
+                            <option value="newest">Newest First</option>
+                        </select>
+                        <div class="view-toggle">
+                            <button class="toggle-btn active" onclick="switchStudentView('grid')">
+                                <i class="fa-solid fa-grid"></i>
+                            </button>
+                            <button class="toggle-btn" onclick="switchStudentView('list')">
+                                <i class="fa-solid fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Events Grid -->
+                <div id="studentEventsGrid" class="cards-grid">
+                </div>
+            </div>
         </section>
 
     </div>
 
+    <!-- Event Creation Modal -->
     <div id="eventModal" class="modal hidden">
-        <div class="modal-content">
+        <div class="modal-overlay" onclick="toggleModal(false)"></div>
+        <div class="modal-content modal-large">
             <div class="modal-header">
-                <h3>Create New Event</h3>
-                <span onclick="toggleModal(false)" class="close">&times;</span>
+                <h3><i class="fa-solid fa-calendar-plus"></i> Create New Event</h3>
+                <button onclick="toggleModal(false)" class="close-btn">
+                    <i class="fa-solid fa-times"></i>
+                </button>
             </div>
             <form onsubmit="handleCreateEvent(event)">
-                <input type="text" id="newEventName" placeholder="Event Name" required>
-                <input type="date" id="newEventDate" required>
-                <input type="text" id="newEventVenue" placeholder="Venue (e.g. Auditorium)" required>
-                <input type="text" id="newEventDesc" placeholder="Short Description" required>
-                <button type="submit" class="btn-primary">Publish Event</button>
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Event Name *</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-signature"></i>
+                                <input type="text" id="newEventName" placeholder="e.g. Tech Fest 2024" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Category *</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-tag"></i>
+                                <select id="newEventCategory" required>
+                                    <option value="">Select category</option>
+                                    <option value="technical">Technical</option>
+                                    <option value="cultural">Cultural</option>
+                                    <option value="sports">Sports</option>
+                                    <option value="workshop">Workshop</option>
+                                    <option value="social">Social</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Date *</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-calendar"></i>
+                                <input type="date" id="newEventDate" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Time *</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-clock"></i>
+                                <input type="time" id="newEventTime" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Venue *</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <input type="text" id="newEventVenue" placeholder="e.g. Main Auditorium" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Capacity *</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-users"></i>
+                                <input type="number" id="newEventCapacity" placeholder="e.g. 500" min="1" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Description *</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-align-left"></i>
+                            <textarea id="newEventDesc" rows="4" placeholder="Describe your event in detail..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Event Banner URL (optional)</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-image"></i>
+                            <input type="url" id="newEventBanner" placeholder="https://example.com/banner.jpg">
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>Registration Deadline</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-calendar-xmark"></i>
+                                <input type="date" id="newEventRegDeadline">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Tags (comma separated)</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-tags"></i>
+                                <input type="text" id="newEventTags" placeholder="ai, coding, hackathon">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" onclick="toggleModal(false)" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-check"></i> Create Event
+                    </button>
+                </div>
             </form>
         </div>
     </div>
 
+    <!-- Event Details Modal -->
+    <div id="eventDetailsModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeEventDetails()"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-calendar-day"></i> Event Details</h3>
+                <button onclick="closeEventDetails()" class="close-btn">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="eventDetailsContent">
+                <!-- Event details will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- My Registrations Modal -->
+    <div id="myRegistrationsModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeMyRegistrations()"></div>
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-ticket"></i> My Registrations</h3>
+                <button onclick="closeMyRegistrations()" class="close-btn">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="myRegistrationsContent">
+                <!-- Registrations will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeProfile()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user"></i> My Profile</h3>
+                <button onclick="closeProfile()" class="close-btn">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="profileContent">
+                <!-- Profile will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
